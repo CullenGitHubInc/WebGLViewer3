@@ -7,7 +7,7 @@ if (!gl) {
     throw new Error("WebGL not supported");
 }
 
-// vertex Shader Source
+// vertex shader source
 const vertexShaderSource = `
     attribute vec3 aPosition;
     attribute vec3 aColor;
@@ -20,7 +20,7 @@ const vertexShaderSource = `
     }
 `;
 
-// fragment Shader Source
+// fragment shader source
 const fragmentShaderSource = `
     precision mediump float;
     varying vec3 vColor;
