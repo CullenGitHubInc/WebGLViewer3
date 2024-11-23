@@ -1,4 +1,4 @@
-// Initialize WebGL
+// initialize WebGL
 const canvas = document.getElementById("glCanvas");
 const gl = canvas.getContext("webgl");
 
@@ -7,7 +7,7 @@ if (!gl) {
     throw new Error("WebGL not supported");
 }
 
-// Vertex Shader Source
+// vertex Shader Source
 const vertexShaderSource = `
     attribute vec3 aPosition;
     attribute vec3 aColor;
@@ -20,7 +20,7 @@ const vertexShaderSource = `
     }
 `;
 
-// Fragment Shader Source
+// fragment Shader Source
 const fragmentShaderSource = `
     precision mediump float;
     varying vec3 vColor;
@@ -29,7 +29,7 @@ const fragmentShaderSource = `
     }
 `;
 
-// Helper function to create a shader
+// helper function to create a shader
 function createShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -42,7 +42,7 @@ function createShader(gl, type, source) {
     return shader;
 }
 
-// Helper function to create a WebGL program
+// helper function to create a WebGL program
 function createProgram(gl, vertexShader, fragmentShader) {
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
@@ -55,13 +55,13 @@ function createProgram(gl, vertexShader, fragmentShader) {
     return program;
 }
 
-// Create shaders and program
+// create shaders and program
 const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
 const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 const program = createProgram(gl, vertexShader, fragmentShader);
 gl.useProgram(program);
 
-// Triangle vertices with colors
+// triangle vertices with colors
 const vertices = new Float32Array([
     // Positions       // Colors (R, G, B)
     0.0,  0.5,  0.0,   1.0, 0.0, 0.0,  // Top (Red)
@@ -69,26 +69,26 @@ const vertices = new Float32Array([
     0.5, -0.5,  0.0,   0.0, 0.0, 1.0   // Bottom-right (Blue)
 ]);
 
-// Create buffer and bind data
+// create buffer and bind data
 const buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-// Set up position attribute
+// set up position attribute
 const aPosition = gl.getAttribLocation(program, "aPosition");
 gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
 gl.enableVertexAttribArray(aPosition);
 
-// Set up color attribute
+// set up color attribute
 const aColor = gl.getAttribLocation(program, "aColor");
 gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 gl.enableVertexAttribArray(aColor);
 
-// Uniform locations
+// uniform locations
 const uProjectionMatrix = gl.getUniformLocation(program, "uProjectionMatrix");
 const uModelViewMatrix = gl.getUniformLocation(program, "uModelViewMatrix");
 
-// Helper functions for LookAt and Ortho
+// helper functions for LookAt and Ortho
 function lookAt(eye, at, up) {
     const zAxis = normalize(subtract(eye, at));
     const xAxis = normalize(cross(up, zAxis));
@@ -111,7 +111,7 @@ function ortho(left, right, bottom, top, near, far) {
     ]);
 }
 
-// Vector math helper functions
+// vector math helper functions
 function normalize(v) {
     const len = Math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2);
     return v.map((x) => x / len);
@@ -133,41 +133,41 @@ function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-// Initialize zoom and view parameters
+// initialize zoom and view parameters
 let zoom = 5;
 const eye = [0, 0, zoom];
 const at = [0, 0, 0];
 const up = [0, 1, 0];
 
-// Render function
+// render function
 function render() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Black background
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // Update LookAt matrix
+    // update LookAt matrix
     const modelViewMatrix = lookAt(eye, at, up);
 
-    // Update Orthographic projection
+    // update Orthographic projection
     const projectionMatrix = ortho(
         -zoom, zoom,  // Left, Right
         -zoom, zoom,  // Bottom, Top
         -10, 10       // Near, Far
     );
 
-    // Send matrices to the shaders
+    // send matrices to the shaders
     gl.uniformMatrix4fv(uModelViewMatrix, false, modelViewMatrix);
     gl.uniformMatrix4fv(uProjectionMatrix, false, projectionMatrix);
 
-    // Draw the triangle
+    // draw the triangle
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
-// Handle slider input for zoom
+// handle slider input for zoom
 document.getElementById("zoomSlider").oninput = function (event) {
     zoom = parseFloat(event.target.value);
     eye[2] = zoom; // Adjust the camera position along the Z-axis
     render();
 };
 
-// Initial render
+// initial render
 render();
